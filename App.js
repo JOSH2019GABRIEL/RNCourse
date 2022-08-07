@@ -1,20 +1,73 @@
+import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, View, ScrollView, FlatList } from 'react-native';
+
+import TodoItems from './assets/components/TodoItems';
+import TodoInput from './assets/components/TodoInput';
 
 export default function App() {
+const [modalIsVisible, setModalIsVisible] = useState(false);
+const [todoAll, setTodoAll] =useState([]);
+
+function startAddTodoHandler() {
+  setModalIsVisible(true);
+}
+
+function endAddTodoHandler() {
+  setModalIsVisible(false);
+
+}
+
+
+
+function addToDoHandler(enterText) {
+  setTodoAll((currentTodoAll)=> [...currentTodoAll, {text: enterText, id: Math.random().toString()},
+  ]);
+  endAddTodoHandler();
+
+}
+
+
+function deleteGoalHandler(id) {
+ setTodoAll(currentTodoAll =>{
+  return currentTodoAll.filter((todo)=> todo.id !=id);
+ });
+}
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <>
+    <StatusBar style='light'/>
+    <View style={styles.appContainer}>
+    <Button title='Add New Todo' color={"#5e0acc"} onPress={startAddTodoHandler}/>
+    <TodoInput visible={modalIsVisible} onAddTodo={addToDoHandler} onCancel={endAddTodoHandler} />
+     <View style={styles.goalContainer}>
+     <FlatList data={todoAll}
+     renderItem={(itemData) => {
+      return <TodoItems text={itemData.item.text} 
+      id={itemData.item.id}
+      onDeleteItem={deleteGoalHandler}/>
+     }}
+     keyExtractor= {(item, index) => {
+      return item.id;
+     }}
+     alwaysBounceVertical={false}
+     />
+     </View>
     </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+  appContainer: {
+    flex:1,
+    paddingTop: 40,
+    paddingHorizontal: 12,
+    backgroundColor: '#1e085a',
   },
+   goalContainer:{
+    flex: 5,
+    padding: 6,
+    alignContent: 'center',
+   },
+   
 });
